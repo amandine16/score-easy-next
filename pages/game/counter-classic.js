@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/rules-of-hooks */
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCalculator, faArrowRotateLeft, faClock, faUserPlus, faEllipsisH } from '@fortawesome/free-solid-svg-icons';
 import ModalCalcul from '../../components/CounterClassic/ModalCalcul';
@@ -7,50 +7,43 @@ import ModalCalcul from '../../components/CounterClassic/ModalCalcul';
 
 export default function counterClassic() {
     const [showModalCalcul, setShowModalCalcul] = useState(false)
-    const [gamers, setGamers] = useState([
-        {
-            id: 0,
-            name: "Amandine",
-            color: "red",
-            points: [
-                1, 2, 4, 10
-            ],
-            currentScore: 0
-        },
-        {
-            id: 1,
-            name: "Julien",
-            color: "blue",
-            points: [
-                1, 2, 4, 10
-            ],
-            currentScore: 0
-        },
-        {
-            id: 2,
-            name: "Hera",
-            color: "yellow",
-            points: [
-                1, 2, 4, 10
-            ],
-            currentScore: 0
-        }
-    ])
+    const [gamers, setGamers] = useState([{ id: 0, name: "Amandine", color: "red", points: [1, 2, 4, 10], podium: 1, currentScore: 0 }, { id: 1, name: "Julien", color: "blue", points: [1, 2, 4, 10], podium: 2, currentScore: 0 }, { id: 2, name: "Hera", color: "yellow", points: [1, 2, 4, 10], podium: 3, currentScore: 0 }])
+    const [currentGamer, setCurrentGamer] = useState(gamers.length !== 0 ? gamers[0] : { id: 0, name: "Gamer 1", color: "red", points: [], podium: 1, currentScore: 0 })
+    const [refresh, setRefresh] = useState(false)
 
-    const [currentGamer, setCurrentGamer] = useState(gamers.length !== 0 ? gamers[0] : {
-        id: 0,
-        name: "Gamer 1",
-        color: "red",
-        points: [],
-        currentScore: 0
-    })
+    const onRefresh = () => {
+        setRefresh((oldRefresh) => !oldRefresh)
+    }
+
+
+    useEffect(() => {
+        const gamersSort = [...gamers]
+        gamersSort.sort((a, b) => (a.currentScore > b.currentScore) ? 1 : ((b.currentScore > a.currentScore) ? -1 : 0));
+        if (options.whoWins === "most points") {
+            gamersSort.reverse()
+        }
+        const sortIdsGamers = []
+        gamersSort.map((gamer, index) => {
+            return (
+                sortIdsGamers.push({ gamerId: gamer.id, podium: index + 1, name: gamer.name })
+            )
+        })
+        const gamersCopy = [...gamers]
+        sortIdsGamers.map((gamerSorted) => {
+            const gamerFoundedIndex = gamersCopy.findIndex((gamer) => gamer.id === gamerSorted.gamerId)
+            if (gamerFoundedIndex !== -1) {
+                gamersCopy[gamerFoundedIndex].podium = gamerSorted.podium
+            }
+        })
+        setGamers(gamersCopy)
+    }, [refresh])
+
 
     const onChangeNameGamer = (value, id) => {
         const gamerIndex = gamers.findIndex((gamer) => gamer.id === id)
         let gamerUpdate = [...gamers]
         gamerUpdate[gamerIndex].name = value
         setGamers(gamerUpdate)
-        console.log('test', gamerUpdate)
     }
     const onReduceScore = (id, incrementation) => {
         const gamerIndex = gamers.findIndex((gamerOld) => gamerOld.id === id)
@@ -64,12 +57,14 @@ export default function counterClassic() {
             }
         }
         setGamers(oldGamers)
+        onRefresh()
     }
     const onIncreaseScore = (gamerId, incrementation) => {
         const gamerIndex = gamers.findIndex((gamerOld) => gamerOld.id === gamerId)
         const oldGamers = [...gamers]
         oldGamers[gamerIndex].currentScore += incrementation
         setGamers(oldGamers)
+        onRefresh()
     }
 
     const [options, setOptions] = useState(
@@ -127,7 +122,7 @@ export default function counterClassic() {
                                 </div>
                                 {/* Order */}
                                 <div className='border border-white'>
-                                    #1
+                                    #{gamer.podium}
                                 </div>
 
                             </div>
