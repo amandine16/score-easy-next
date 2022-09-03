@@ -1,11 +1,12 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 import React, { useState } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCalculator, faArrowRotateLeft, faClock, faUserPlus } from '@fortawesome/free-solid-svg-icons';
+import { faCalculator, faArrowRotateLeft, faClock, faUserPlus, faEllipsisH } from '@fortawesome/free-solid-svg-icons';
+import ModalCalcul from '../../components/CounterClassic/ModalCalcul';
 
 
 export default function counterClassic() {
-
+    const [showModalCalcul, setShowModalCalcul] = useState(false)
     const [gamers, setGamers] = useState([
         {
             id: 0,
@@ -13,7 +14,8 @@ export default function counterClassic() {
             color: "red",
             points: [
                 1, 2, 4, 10
-            ]
+            ],
+            currentScore: 0
         },
         {
             id: 1,
@@ -21,7 +23,8 @@ export default function counterClassic() {
             color: "blue",
             points: [
                 1, 2, 4, 10
-            ]
+            ],
+            currentScore: 0
         },
         {
             id: 2,
@@ -29,23 +32,78 @@ export default function counterClassic() {
             color: "yellow",
             points: [
                 1, 2, 4, 10
-            ]
+            ],
+            currentScore: 0
         }
     ])
 
-    const onChangeGamer = (value, id) => {
+    const [currentGamer, setCurrentGamer] = useState(gamers.length !== 0 ? gamers[0] : {
+        id: 0,
+        name: "Gamer 1",
+        color: "red",
+        points: [],
+        currentScore: 0
+    })
+
+    const onChangeNameGamer = (value, id) => {
         const gamerIndex = gamers.findIndex((gamer) => gamer.id === id)
-        console.log('gamerIndex', gamerIndex)
         let gamerUpdate = [...gamers]
-        console.log('value', value)
         gamerUpdate[gamerIndex].name = value
         setGamers(gamerUpdate)
         console.log('test', gamerUpdate)
+    }
+    const onReduceScore = (id, incrementation) => {
+        const gamerIndex = gamers.findIndex((gamerOld) => gamerOld.id === id)
+        const oldGamers = [...gamers]
+        if (options.possibleNegative) {
+            oldGamers[gamerIndex].currentScore -= incrementation
+        }
+        if (!options.possibleNegative) {
+            if (oldGamers[gamerIndex].currentScore !== 0) {
+                oldGamers[gamerIndex].currentScore -= incrementation
+            }
+        }
+        setGamers(oldGamers)
+    }
+    const onIncreaseScore = (gamerId, incrementation) => {
+        const gamerIndex = gamers.findIndex((gamerOld) => gamerOld.id === gamerId)
+        const oldGamers = [...gamers]
+        oldGamers[gamerIndex].currentScore += incrementation
+        setGamers(oldGamers)
+    }
+
+    const [options, setOptions] = useState(
+        {
+            incrementation: 1,
+            chrono: false,
+            whoWins: "most points",
+            sleeves: "illimity",
+            possibleNegative: false
+
+        })
+
+    const openModalCalcul = (gamerId) => {
+        const gamerFounded = gamers.find((gamer) => gamer.id === gamerId)
+        setCurrentGamer(gamerFounded)
+        setShowModalCalcul(true)
+    }
+
+    const closeModalCalcul = () => setShowModalCalcul(false)
+
+
+    const addInScoring = (currentGamerId, newPoints) => {
+        const oldGamers = [...gamers]
+        const gamerIndex = oldGamers.findIndex((gamer) => gamer.id === currentGamerId)
+        oldGamers[gamerIndex].points.push(newPoints)
+        setGamers(oldGamers)
 
     }
 
     return (
         <div className="max-w-sm mx-auto border border-white ">
+            {showModalCalcul &&
+                <ModalCalcul addInScoring={addInScoring} currentGamer={currentGamer} onIncreaseScore={onIncreaseScore} onReduceScore={onReduceScore} closeModalCalcul={closeModalCalcul} />
+            }
             <div className="flex items-center justify-between">
                 <div>
                     <FontAwesomeIcon icon={faCalculator} />
@@ -55,12 +113,44 @@ export default function counterClassic() {
                     <FontAwesomeIcon icon={faClock} />
                     <FontAwesomeIcon icon={faArrowRotateLeft} />
                     <FontAwesomeIcon icon={faUserPlus} />
+                    <FontAwesomeIcon icon={faEllipsisH} />
                 </div>
             </div>
             <div className='bg-gray-3'>
                 {gamers.map((gamer, index) => {
                     return (
-                        <input key={gamer.id} type="text" value={gamer.name} onChange={(e) => onChangeGamer(e.target.value, gamer.id)} />
+                        <div key={gamer.id}>
+                            <div className='flex items-center'>
+                                {/* Name */}
+                                <div className='flex-1 my-1 mr-1 justify-center text-center'>
+                                    <input key={gamer.id} type="text" value={gamer.name} className="w-full border border-white " onChange={(e) => onChangeNameGamer(e.target.value, gamer.id)} />
+                                </div>
+                                {/* Order */}
+                                <div className='border border-white'>
+                                    #1
+                                </div>
+
+                            </div>
+                            {/* Scoring */}
+                            <div className=' w-full no-scrollbar  overflow-auto whitespace-nowrap justify-end flex'>
+                                {gamer.points.map((point, index) => {
+                                    return (
+                                        <div key={index} className={`min-w-[100px] border text-center border-white overflow-hidden ${index === gamer.points.length - 1 && 'font-bold '}`} >{point}</div>
+                                    )
+                                })}
+                            </div>
+                            <div className="flex items-center">
+                                <div className='flex items-center justify-center border border-white flex-1' onClick={() => onReduceScore(gamer.id, options.incrementation)} >
+                                    -
+                                </div>
+                                <div className='flex items-center justify-center border border-white flex-1' onClick={() => openModalCalcul(gamer.id)}>
+                                    {gamer.currentScore}
+                                </div>
+                                <div className='flex items-center justify-center border border-white flex-1' onClick={() => onIncreaseScore(gamer.id, options.incrementation)}>
+                                    +
+                                </div>
+                            </div>
+                        </div>
                     )
                 })}
             </div>
