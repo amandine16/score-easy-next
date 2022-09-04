@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 
-export default function ModalCalcul({ currentGamer, updateGamerCurrentScore, closeModalCalcul, addInScoring, options }) {
+export default function ModalCalcul({ currentGamer, onRefresh, updateGamerCurrentScore, closeModalCalcul, addInScoring, options }) {
     const [operator, setOperator] = useState("+")
     const [currentScoreTemporary, setCurrentScoreTemporary] = useState(currentGamer.currentScore)
     const [amount, setAmount] = useState(0)
@@ -16,6 +16,7 @@ export default function ModalCalcul({ currentGamer, updateGamerCurrentScore, clo
             addInScoring(currentGamer.id, -amount)
             updateGamerCurrentScore(currentGamer.id, total)
         }
+        onRefresh()
         closeModalCalcul()
     }
 
@@ -48,10 +49,10 @@ export default function ModalCalcul({ currentGamer, updateGamerCurrentScore, clo
             </div>
             <div className='flex items-center h-20 my-1'>
                 <div className='flex-1  h-full'>
-                    <div className={`border flex-1 h-1/2 border-black text-center ${operator === "+" && "bg-black text-white "}`} onClick={() => onClickOperator("+")}>
+                    <div className={`border justify-center items-center flex  h-1/2 border-black text-center  ${operator === "+" && "bg-black text-white "}`} onClick={() => onClickOperator("+")}>
                         +
                     </div>
-                    <div className={`border flex-1 h-1/2 border-black text-center ${operator === "-" && "bg-black text-white "}`} onClick={() => onClickOperator("-")}>
+                    <div className={`border  justify-center items-center flex h-1/2 border-black text-center ${operator === "-" && "bg-black text-white "}`} onClick={() => onClickOperator("-")}>
                         -
                     </div>
                 </div>

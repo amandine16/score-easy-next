@@ -2,8 +2,9 @@
 import React, { useEffect, useState } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCalculator, faArrowRotateLeft, faClock, faUserPlus, faEllipsisH } from '@fortawesome/free-solid-svg-icons';
-import ModalCalcul from '../../components/CounterClassic/ModalCalcul';
+import ModalCalcul from '../../components/CounterClassic/modalClassic/ModalCalcul';
 import { gamerAddByDefault } from '../../utils/constants';
+import ModalOptionsCounterClassic from '../../components/CounterClassic/modalClassic/ModalOptionsCounterClassic';
 
 
 export default function counterClassic() {
@@ -14,14 +15,22 @@ export default function counterClassic() {
     const [refresh, setRefresh] = useState(false)
     const [pointsAddedEachRound, setpointsAddedEachRound] = useState([0])
     const [currentScoreTemporary, setCurrentScoreTemporary] = useState(0)
+    const [showModalOptions, setShowModalOptions] = useState(false)
 
+    const openModalOptions = () => {
+        setShowModalOptions(true)
+    }
+    const closeModalOptions = () => {
+        setShowModalOptions(false)
+    }
+
+    const onChangeOptions = (newOptions) => {
+        setOptions(newOptions)
+    }
 
     const onRefresh = () => {
         setRefresh((oldRefresh) => !oldRefresh)
     }
-
-
-
 
     useEffect(() => {
         const gamersSort = [...gamers]
@@ -61,7 +70,7 @@ export default function counterClassic() {
 
 
         if (!options.possibleNegative) {
-            if (currentScore - Math.abs(newPointsAddedEachRound[index]) < 0) {
+            if (pointsAddedEachRound[index] - Math.abs(newPointsAddedEachRound[index]) < 0) {
                 // afficher message erreur
             } else {
 
@@ -75,7 +84,6 @@ export default function counterClassic() {
             setCurrentScoreTemporary(currentScore - Math.abs(newPointsAddedEachRound[index]))
 
         }
-
     }
 
 
@@ -115,17 +123,14 @@ export default function counterClassic() {
     }
 
     const save = (currentGamerId, index) => {
-        const oldGamers = [...gamers]
-        const gamerIndex = oldGamers.findIndex((gamer) => gamer.id === currentGamerId)
-        oldGamers[gamerIndex].currentScore = currentScoreTemporary
-
+        updateGamerCurrentScore(currentGamerId, currentScoreTemporary)
         addInScoring(currentGamerId, pointsAddedEachRound[index], currentScoreTemporary)
         const newPointsAddedEachRound = [...pointsAddedEachRound]
         newPointsAddedEachRound[index] = 0
         setpointsAddedEachRound(newPointsAddedEachRound)
-        setGamers(oldGamers)
+        setCurrentScoreTemporary(currentScoreTemporary)
+        onRefresh()
 
-        setCurrentScoreTemporary(oldGamers[gamerIndex].currentScore)
     }
 
     const updateGamerCurrentScore = (gamerId, newCurrentScore) => {
@@ -144,24 +149,32 @@ export default function counterClassic() {
         setGamers(oldGamers)
     }
 
-    return (
-        <div className="max-w-sm mx-auto border  border-white ">
-            {showModalCalcul &&
-                <ModalCalcul updateGamerCurrentScore={updateGamerCurrentScore} addInScoring={addInScoring} options={options} currentGamer={currentGamer} closeModalCalcul={closeModalCalcul} />
-            }
-            <div className="flex items-center justify-between">
-                <div>
-                    <FontAwesomeIcon icon={faCalculator} />
+    const changeOptions = (key, value) => {
+        const newOptions = { ...options }
+        newOptions[key] = value
+        setOptions(newOptions)
+    }
 
-                </div>
+    return (
+        <div className="max-w-sm mx-auto border  border-white p-2 ">
+            {showModalCalcul &&
+                <ModalCalcul updateGamerCurrentScore={updateGamerCurrentScore} addInScoring={addInScoring} options={options} currentGamer={currentGamer} closeModal={closeModalCalcul} onRefresh={onRefresh} />
+            }
+            {showModalOptions &&
+                <ModalOptionsCounterClassic changeOptions={changeOptions} options={options} onChangeOptions={onChangeOptions} closeModal={closeModalOptions} onRefresh={onRefresh} />
+            }
+            <div className="flex items-center justify-between mb-2">
                 <div>
-                    <FontAwesomeIcon icon={faClock} />
-                    <FontAwesomeIcon icon={faArrowRotateLeft} />
-                    <FontAwesomeIcon icon={faUserPlus} />
-                    <FontAwesomeIcon icon={faEllipsisH} />
+                    <FontAwesomeIcon icon={faCalculator} className="text-[20px]" />
+                </div>
+                <div className='flex items-center'>
+                    <FontAwesomeIcon icon={faClock} className="text-[20px] mr-2" />
+                    <FontAwesomeIcon icon={faArrowRotateLeft} className="text-[20px] mr-2" />
+                    <FontAwesomeIcon icon={faUserPlus} className="text-[20px] mr-2" />
+                    <FontAwesomeIcon icon={faEllipsisH} className="text-[20px]" onClick={openModalOptions} />
                 </div>
             </div>
-            <div className='bg-gray-3 p-2'>
+            <div className=' '>
                 {gamers.map((gamer, index) => {
                     return (
                         <div key={gamer.id} className="p-1 border border-white">
