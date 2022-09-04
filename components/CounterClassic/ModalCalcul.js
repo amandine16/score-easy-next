@@ -19,8 +19,8 @@ export default function ModalCalcul({ currentGamer, updateGamerCurrentScore, clo
         closeModalCalcul()
     }
 
-    const onClickOperator = () => {
-        setOperator(operator === "+" ? "-" : "+")
+    const onClickOperator = (operator) => {
+        setOperator(operator)
         onChangeAmount(0)
     }
 
@@ -41,27 +41,43 @@ export default function ModalCalcul({ currentGamer, updateGamerCurrentScore, clo
     }
 
     return (
-        <div className='absolute max-w-sm mx-auto top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full border p-2 border-white'>
+        <div className='bg-white text-black absolute max-w-sm mx-auto top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full border p-2 border-black'>
             <div className='flex items-center justify-between'>
                 <div>{currentGamer.name}</div>
                 <div onClick={closeModalCalcul}>Back</div>
             </div>
-            <div className="flex items-center text-center">
-                <div className="flex-1 border border-white">
+            <div className='flex items-center h-20 my-1'>
+                <div className='flex-1  h-full'>
+                    <div className={`border flex-1 h-1/2 border-black text-center ${operator === "+" && "bg-black text-white "}`} onClick={() => onClickOperator("+")}>
+                        +
+                    </div>
+                    <div className={`border flex-1 h-1/2 border-black text-center ${operator === "-" && "bg-black text-white "}`} onClick={() => onClickOperator("-")}>
+                        -
+                    </div>
+                </div>
+                <div className="flex-1 h-full border border-black">
+                    <input type="number" min={0} max={
+                        operator === "-" && !options.possibleNegative ? currentGamer.currentScore : 10000000
+                    } value={amount} onChange={(e) => onChangeAmount(e.target.value)} className="w-full h-full flex-1 bg-transparent text-center" />
+                </div>
+            </div>
+
+            {/* <div className="flex items-center text-center">
+                <div className="flex-1 border border-black">
                     {currentGamer.currentScore}
                 </div>
-                <div className="flex-1 border border-white" onClick={onClickOperator}>
+                <div className="flex-1 border border-black" onClick={onClickOperator}>
                     {operator}
 
                 </div>
-                <div className="flex-1 border border-white">
+                <div className="flex-1 border border-black">
                     <input type="number" min={0} max={
                         operator === "-" && !options.possibleNegative ? currentGamer.currentScore : 10000000
                     } value={amount} onChange={(e) => onChangeAmount(e.target.value)} className="w-full bg-transparent text-center" />
                 </div>
-            </div>
+            </div> */}
             Total : {currentScoreTemporary}
-            <div className='border border-white text-center' onClick={save}>Save</div>
+            <div className='border border-black text-center' onClick={save}>Save</div>
         </div>
     )
 }

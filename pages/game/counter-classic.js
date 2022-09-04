@@ -145,7 +145,7 @@ export default function counterClassic() {
     }
 
     return (
-        <div className="max-w-sm mx-auto border border-white ">
+        <div className="max-w-sm mx-auto border  border-white ">
             {showModalCalcul &&
                 <ModalCalcul updateGamerCurrentScore={updateGamerCurrentScore} addInScoring={addInScoring} options={options} currentGamer={currentGamer} closeModalCalcul={closeModalCalcul} />
             }
