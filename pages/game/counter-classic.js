@@ -12,6 +12,9 @@ export default function counterClassic() {
     const [gamers, setGamers] = useState([gamerAddByDefault])
     const [currentGamer, setCurrentGamer] = useState(gamers.length !== 0 ? gamers[0] : gamerDefault)
     const [refresh, setRefresh] = useState(false)
+    const [pointsAddedEachRound, setpointsAddedEachRound] = useState(0)
+    const [currentScoreTemporary, setCurrentScoreTemporary] = useState(0)
+
 
     const onRefresh = () => {
         setRefresh((oldRefresh) => !oldRefresh)
@@ -51,26 +54,83 @@ export default function counterClassic() {
         setGamers(gamerUpdate)
     }
 
-    const onReduceScore = (id, incrementation) => {
-        const gamerIndex = gamers.findIndex((gamerOld) => gamerOld.id === id)
-        const oldGamers = [...gamers]
-        if (options.possibleNegative) {
-            oldGamers[gamerIndex].currentScore -= incrementation
-        }
+    // const onReduceScore = (id, incrementation) => {
+    //     const gamerIndex = gamers.findIndex((gamerOld) => gamerOld.id === id)
+    //     const oldGamers = [...gamers]
+    //     if (options.possibleNegative) {
+    //         oldGamers[gamerIndex].currentScore -= incrementation
+    //     }
+    //     if (!options.possibleNegative) {
+    //         if (oldGamers[gamerIndex].currentScore !== 0) {
+    //             oldGamers[gamerIndex].currentScore -= incrementation
+    //         }
+    //     }
+    //     setGamers(oldGamers)
+    //     onRefresh()
+    // }
+
+    const onReduceScore = (currentScore, incrementation) => {
+
+        const newPointsAddedEachRound = pointsAddedEachRound - incrementation
+
+
         if (!options.possibleNegative) {
-            if (oldGamers[gamerIndex].currentScore !== 0) {
-                oldGamers[gamerIndex].currentScore -= incrementation
+            console.log(' newPointsAddedEachRound', newPointsAddedEachRound)
+            console.log(' currentScore', currentScore)
+            if (currentScore - Math.abs(newPointsAddedEachRound) < 0) {
+                // afficher message erreur
+            } else {
+                setpointsAddedEachRound((oldValue) => oldValue - incrementation)
+                setpointsAddedEachRound(newPointsAddedEachRound)
+                setCurrentScoreTemporary(currentScore - Math.abs(newPointsAddedEachRound))
+
             }
         }
-        setGamers(oldGamers)
-        onRefresh()
+        if (options.possibleNegative) {
+            setpointsAddedEachRound((oldValue) => oldValue - incrementation)
+            setpointsAddedEachRound(newPointsAddedEachRound)
+            setCurrentScoreTemporary(currentScore - Math.abs(newPointsAddedEachRound))
+
+        }
+
+
+        // if (options.possibleNegative) {
+        //     setpointsAddedEachRound((oldValue) => oldValue - incrementation)
+        //     setCurrentScoreTemporary(currentScore - incrementation)
+
+        // }
+        // if (!options.possibleNegative) {
+        //     if (pointsAddedEachRound !== 0) {
+        //         setpointsAddedEachRound((oldValue) => oldValue - incrementation)
+        //         setCurrentScoreTemporary(currentScore - incrementation)
+        //     }
+        // }
+
+        // const gamerIndex = gamers.findIndex((gamerOld) => gamerOld.id === id)
+        // if (options.possibleNegative) {
+        //     oldGamers[gamerIndex].currentScore -= incrementation
+        // }
+        // if (!options.possibleNegative) {
+        //     if (oldGamers[gamerIndex].currentScore !== 0) {
+        //         oldGamers[gamerIndex].currentScore -= incrementation
+        //     }
+        // }
+        // setGamers(oldGamers)
+        // onRefresh()
     }
-    const onIncreaseScore = (gamerId, incrementation) => {
-        const gamerIndex = gamers.findIndex((gamerOld) => gamerOld.id === gamerId)
-        const oldGamers = [...gamers]
-        oldGamers[gamerIndex].currentScore += incrementation
-        setGamers(oldGamers)
-        onRefresh()
+
+
+
+    const onIncreaseScore = (currentScore, incrementation) => {
+        // const gamerIndex = gamers.findIndex((gamerOld) => gamerOld.id === gamerId)
+        // const oldGamers = [...gamers]
+        const total = pointsAddedEachRound + incrementation
+        setpointsAddedEachRound(total)
+        setCurrentScoreTemporary(currentScore + total)
+
+        // oldGamers[gamerIndex].currentScore += incrementation
+        // setGamers(oldGamers)
+        // onRefresh()
     }
 
     const optionsDefault = {
@@ -78,7 +138,7 @@ export default function counterClassic() {
         chrono: false,
         whoWins: "most points",
         sleeves: "illimity",
-        possibleNegative: false
+        possibleNegative: true
     }
     const [options, setOptions] = useState(optionsDefault)
 
@@ -91,12 +151,24 @@ export default function counterClassic() {
     const closeModalCalcul = () => setShowModalCalcul(false)
 
 
-    const addInScoring = (currentGamerId, newPoints) => {
+    const addInScoring = (currentGamerId, newPoints, newTotalPoints) => {
         const oldGamers = [...gamers]
         const gamerIndex = oldGamers.findIndex((gamer) => gamer.id === currentGamerId)
-        oldGamers[gamerIndex].points.push(newPoints)
+        oldGamers[gamerIndex].points.push(pointsAddedEachRound)
+
         setGamers(oldGamers)
     }
+
+    const save = (currentGamerId) => {
+        const oldGamers = [...gamers]
+        const gamerIndex = oldGamers.findIndex((gamer) => gamer.id === currentGamerId)
+        oldGamers[gamerIndex].currentScore = currentScoreTemporary
+        addInScoring(currentGamerId, pointsAddedEachRound, currentScoreTemporary)
+        setGamers(oldGamers)
+        setpointsAddedEachRound(0)
+        setCurrentScoreTemporary(oldGamers[gamerIndex].currentScore)
+    }
+
     const addPalyer = () => {
         let oldGamers = [...gamers]
         oldGamers.push({ id: oldGamers.length, name: "player " + (oldGamers.length + 1), color: "red", points: [], podium: oldGamers.length + 1, currentScore: 0 })
@@ -136,29 +208,35 @@ export default function counterClassic() {
 
                             </div>
                             {/* Scoring */}
-                            <div className=' w-full no-scrollbar  overflow-auto whitespace-nowrap justify-end flex'>
+                            <div className=' w-full no-scrollbar  overflow-auto whitespace-nowrap  flex'>
                                 {gamer.points.map((point, index) => {
                                     return (
-                                        <div key={index} className={`min-w-[100px] border text-center border-white overflow-hidden ${index === gamer.points.length - 1 && 'font-bold '}`} >{point}</div>
+                                        <>
+                                            <div key={index} className={`min-w-[100px] border text-center border-white overflow-hidden ${index === gamer.points.length - 1 && 'font-bold '}`} >{point}</div>
+
+                                        </>
                                     )
                                 })}
                             </div>
                             {/* Counter */}
                             <div className="flex items-center">
-                                <div className='flex items-center justify-center border border-white flex-1' onClick={() => onReduceScore(gamer.id, options.incrementation)} >
+                                <div className='flex items-center justify-center border border-white flex-1' onClick={() => onReduceScore(gamer.currentScore, options.incrementation)} >
                                     -
                                 </div>
                                 <div className='flex items-center justify-center border border-white flex-1' onClick={() => openModalCalcul(gamer.id)}>
-                                    {gamer.currentScore}
+                                    {pointsAddedEachRound}
                                 </div>
-                                <div className='flex items-center justify-center border border-white flex-1' onClick={() => onIncreaseScore(gamer.id, options.incrementation)}>
+                                <div className='flex items-center justify-center border border-white flex-1' onClick={() => onIncreaseScore(gamer.currentScore, options.incrementation)}>
                                     +
                                 </div>
                             </div>
-                            {/* Add player */}
+                            <div onClick={() => save(gamer.id)}>Save</div>
+                            {/* Total current Gamer */}
+                            <div>Total : {gamer.currentScore}</div>
                         </div>
                     )
                 })}
+                {/* Add player */}
                 <div onClick={addPalyer}>Add player +</div>
             </div>
 
