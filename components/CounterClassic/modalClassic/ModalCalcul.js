@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 
-export default function ModalCalcul({ currentGamer, onRefresh, updateGamerCurrentScore, closeModalCalcul, addInScoring, options }) {
+export default function ModalCalcul({ currentGamer, onRefresh, updateGamerCurrentScore, closeModal, addInScoring, options }) {
     const [operator, setOperator] = useState("+")
     const [currentScoreTemporary, setCurrentScoreTemporary] = useState(currentGamer.currentScore)
     const [amount, setAmount] = useState(0)
@@ -17,7 +17,7 @@ export default function ModalCalcul({ currentGamer, onRefresh, updateGamerCurren
             updateGamerCurrentScore(currentGamer.id, total)
         }
         onRefresh()
-        closeModalCalcul()
+        closeModal()
     }
 
     const onClickOperator = (operator) => {
@@ -45,7 +45,7 @@ export default function ModalCalcul({ currentGamer, onRefresh, updateGamerCurren
         <div className='bg-white text-black absolute max-w-sm mx-auto top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full border p-2 border-black'>
             <div className='flex items-center justify-between'>
                 <div>{currentGamer.name}</div>
-                <div onClick={closeModalCalcul}>Back</div>
+                <div onClick={closeModal}>Back</div>
             </div>
             <div className='flex items-center h-20 my-1'>
                 <div className='flex-1  h-full'>
