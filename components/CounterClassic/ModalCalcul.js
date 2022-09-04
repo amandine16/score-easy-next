@@ -1,22 +1,24 @@
 import React, { useState } from 'react'
 
-export default function ModalCalcul({ currentGamer, onIncreaseScore, onReduceScore, closeModalCalcul, addInScoring }) {
+export default function ModalCalcul({ currentGamer, onIncreaseScore, onReduceScore, closeModalCalcul, addInScoring, options }) {
     const [operator, setOperator] = useState("+")
     const [amount, setAmount] = useState(0)
 
     const save = () => {
         if (operator === "+") {
             onIncreaseScore(currentGamer.id, amount)
+            addInScoring(currentGamer.id, amount)
         }
         if (operator === "-") {
             onReduceScore(currentGamer.id, amount)
+            addInScoring(currentGamer.id, -amount)
         }
-        addInScoring(currentGamer.id, amount)
         closeModalCalcul()
     }
 
     const onClickOperator = () => {
         setOperator(operator === "+" ? "-" : "+")
+        onChangeAmount(0)
     }
 
     const onChangeAmount = (value) => {
@@ -35,9 +37,12 @@ export default function ModalCalcul({ currentGamer, onIncreaseScore, onReduceSco
                 </div>
                 <div className="flex-1 border border-white" onClick={onClickOperator}>
                     {operator}
+
                 </div>
                 <div className="flex-1 border border-white">
-                    <input type="number" min={0} value={amount} onChange={(e) => onChangeAmount(e.target.value)} />
+                    <input type="number" min={0} max={
+                        operator === "-" && !options.possibleNegative ? currentGamer.currentScore : 10000000
+                    } value={amount} onChange={(e) => onChangeAmount(e.target.value)} />
                 </div>
             </div>
             <div onClick={save}>Save</div>

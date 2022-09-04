@@ -3,17 +3,22 @@ import React, { useEffect, useState } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCalculator, faArrowRotateLeft, faClock, faUserPlus, faEllipsisH } from '@fortawesome/free-solid-svg-icons';
 import ModalCalcul from '../../components/CounterClassic/ModalCalcul';
+import { gamerAddByDefault } from '../../utils/constants';
 
 
 export default function counterClassic() {
     const [showModalCalcul, setShowModalCalcul] = useState(false)
-    const [gamers, setGamers] = useState([{ id: 0, name: "Amandine", color: "red", points: [1, 2, 4, 10], podium: 1, currentScore: 0 }, { id: 1, name: "Julien", color: "blue", points: [1, 2, 4, 10], podium: 2, currentScore: 0 }, { id: 2, name: "Hera", color: "yellow", points: [1, 2, 4, 10], podium: 3, currentScore: 0 }])
-    const [currentGamer, setCurrentGamer] = useState(gamers.length !== 0 ? gamers[0] : { id: 0, name: "Gamer 1", color: "red", points: [], podium: 1, currentScore: 0 })
+    const [isLoading, setIsLoading] = useState(true)
+    const [gamers, setGamers] = useState([gamerAddByDefault])
+    const [currentGamer, setCurrentGamer] = useState(gamers.length !== 0 ? gamers[0] : gamerDefault)
     const [refresh, setRefresh] = useState(false)
 
     const onRefresh = () => {
         setRefresh((oldRefresh) => !oldRefresh)
     }
+
+
+    console.log('gamer', gamers)
 
 
     useEffect(() => {
@@ -45,6 +50,7 @@ export default function counterClassic() {
         gamerUpdate[gamerIndex].name = value
         setGamers(gamerUpdate)
     }
+
     const onReduceScore = (id, incrementation) => {
         const gamerIndex = gamers.findIndex((gamerOld) => gamerOld.id === id)
         const oldGamers = [...gamers]
@@ -67,15 +73,14 @@ export default function counterClassic() {
         onRefresh()
     }
 
-    const [options, setOptions] = useState(
-        {
-            incrementation: 1,
-            chrono: false,
-            whoWins: "most points",
-            sleeves: "illimity",
-            possibleNegative: false
-
-        })
+    const optionsDefault = {
+        incrementation: 1,
+        chrono: false,
+        whoWins: "most points",
+        sleeves: "illimity",
+        possibleNegative: false
+    }
+    const [options, setOptions] = useState(optionsDefault)
 
     const openModalCalcul = (gamerId) => {
         const gamerFounded = gamers.find((gamer) => gamer.id === gamerId)
@@ -91,13 +96,17 @@ export default function counterClassic() {
         const gamerIndex = oldGamers.findIndex((gamer) => gamer.id === currentGamerId)
         oldGamers[gamerIndex].points.push(newPoints)
         setGamers(oldGamers)
-
+    }
+    const addPalyer = () => {
+        let oldGamers = [...gamers]
+        oldGamers.push({ id: oldGamers.length, name: "player " + (oldGamers.length + 1), color: "red", points: [], podium: oldGamers.length + 1, currentScore: 0 })
+        setGamers(oldGamers)
     }
 
     return (
         <div className="max-w-sm mx-auto border border-white ">
             {showModalCalcul &&
-                <ModalCalcul addInScoring={addInScoring} currentGamer={currentGamer} onIncreaseScore={onIncreaseScore} onReduceScore={onReduceScore} closeModalCalcul={closeModalCalcul} />
+                <ModalCalcul addInScoring={addInScoring} options={options} currentGamer={currentGamer} onIncreaseScore={onIncreaseScore} onReduceScore={onReduceScore} closeModalCalcul={closeModalCalcul} />
             }
             <div className="flex items-center justify-between">
                 <div>
@@ -134,6 +143,7 @@ export default function counterClassic() {
                                     )
                                 })}
                             </div>
+                            {/* Counter */}
                             <div className="flex items-center">
                                 <div className='flex items-center justify-center border border-white flex-1' onClick={() => onReduceScore(gamer.id, options.incrementation)} >
                                     -
@@ -145,9 +155,11 @@ export default function counterClassic() {
                                     +
                                 </div>
                             </div>
+                            {/* Add player */}
                         </div>
                     )
                 })}
+                <div onClick={addPalyer}>Add player +</div>
             </div>
 
         </div>
