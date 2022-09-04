@@ -21,7 +21,6 @@ export default function counterClassic() {
     }
 
 
-    console.log('gamer', gamers)
 
 
     useEffect(() => {
@@ -54,20 +53,7 @@ export default function counterClassic() {
         setGamers(gamerUpdate)
     }
 
-    // const onReduceScore = (id, incrementation) => {
-    //     const gamerIndex = gamers.findIndex((gamerOld) => gamerOld.id === id)
-    //     const oldGamers = [...gamers]
-    //     if (options.possibleNegative) {
-    //         oldGamers[gamerIndex].currentScore -= incrementation
-    //     }
-    //     if (!options.possibleNegative) {
-    //         if (oldGamers[gamerIndex].currentScore !== 0) {
-    //             oldGamers[gamerIndex].currentScore -= incrementation
-    //         }
-    //     }
-    //     setGamers(oldGamers)
-    //     onRefresh()
-    // }
+
 
     const onReduceScore = (currentScore, incrementation) => {
 
@@ -75,8 +61,6 @@ export default function counterClassic() {
 
 
         if (!options.possibleNegative) {
-            console.log(' newPointsAddedEachRound', newPointsAddedEachRound)
-            console.log(' currentScore', currentScore)
             if (currentScore - Math.abs(newPointsAddedEachRound) < 0) {
                 // afficher message erreur
             } else {
@@ -93,52 +77,23 @@ export default function counterClassic() {
 
         }
 
-
-        // if (options.possibleNegative) {
-        //     setpointsAddedEachRound((oldValue) => oldValue - incrementation)
-        //     setCurrentScoreTemporary(currentScore - incrementation)
-
-        // }
-        // if (!options.possibleNegative) {
-        //     if (pointsAddedEachRound !== 0) {
-        //         setpointsAddedEachRound((oldValue) => oldValue - incrementation)
-        //         setCurrentScoreTemporary(currentScore - incrementation)
-        //     }
-        // }
-
-        // const gamerIndex = gamers.findIndex((gamerOld) => gamerOld.id === id)
-        // if (options.possibleNegative) {
-        //     oldGamers[gamerIndex].currentScore -= incrementation
-        // }
-        // if (!options.possibleNegative) {
-        //     if (oldGamers[gamerIndex].currentScore !== 0) {
-        //         oldGamers[gamerIndex].currentScore -= incrementation
-        //     }
-        // }
-        // setGamers(oldGamers)
-        // onRefresh()
     }
 
 
 
     const onIncreaseScore = (currentScore, incrementation) => {
-        // const gamerIndex = gamers.findIndex((gamerOld) => gamerOld.id === gamerId)
-        // const oldGamers = [...gamers]
         const total = pointsAddedEachRound + incrementation
         setpointsAddedEachRound(total)
         setCurrentScoreTemporary(currentScore + total)
-
-        // oldGamers[gamerIndex].currentScore += incrementation
-        // setGamers(oldGamers)
-        // onRefresh()
     }
+
 
     const optionsDefault = {
         incrementation: 1,
         chrono: false,
         whoWins: "most points",
         sleeves: "illimity",
-        possibleNegative: true
+        possibleNegative: false
     }
     const [options, setOptions] = useState(optionsDefault)
 
@@ -151,11 +106,10 @@ export default function counterClassic() {
     const closeModalCalcul = () => setShowModalCalcul(false)
 
 
-    const addInScoring = (currentGamerId, newPoints, newTotalPoints) => {
+    const addInScoring = (currentGamerId, newPoints) => {
         const oldGamers = [...gamers]
         const gamerIndex = oldGamers.findIndex((gamer) => gamer.id === currentGamerId)
-        oldGamers[gamerIndex].points.push(pointsAddedEachRound)
-
+        oldGamers[gamerIndex].points.push(newPoints)
         setGamers(oldGamers)
     }
 
@@ -169,7 +123,14 @@ export default function counterClassic() {
         setCurrentScoreTemporary(oldGamers[gamerIndex].currentScore)
     }
 
-    const addPalyer = () => {
+    const updateGamerCurrentScore = (gamerId, newCurrentScore) => {
+        const oldGamers = [...gamers]
+        const gamerIndex = oldGamers.findIndex((gamer) => gamer.id === gamerId)
+        oldGamers[gamerIndex].currentScore = newCurrentScore
+        setGamers(oldGamers)
+    }
+
+    const addPlayer = () => {
         let oldGamers = [...gamers]
         oldGamers.push({ id: oldGamers.length, name: "player " + (oldGamers.length + 1), color: "red", points: [], podium: oldGamers.length + 1, currentScore: 0 })
         setGamers(oldGamers)
@@ -178,7 +139,7 @@ export default function counterClassic() {
     return (
         <div className="max-w-sm mx-auto border border-white ">
             {showModalCalcul &&
-                <ModalCalcul addInScoring={addInScoring} options={options} currentGamer={currentGamer} onIncreaseScore={onIncreaseScore} onReduceScore={onReduceScore} closeModalCalcul={closeModalCalcul} />
+                <ModalCalcul updateGamerCurrentScore={updateGamerCurrentScore} addInScoring={addInScoring} options={options} currentGamer={currentGamer} onReduceScore={onReduceScore} closeModalCalcul={closeModalCalcul} />
             }
             <div className="flex items-center justify-between">
                 <div>
@@ -192,14 +153,14 @@ export default function counterClassic() {
                     <FontAwesomeIcon icon={faEllipsisH} />
                 </div>
             </div>
-            <div className='bg-gray-3'>
+            <div className='bg-gray-3 p-2'>
                 {gamers.map((gamer, index) => {
                     return (
-                        <div key={gamer.id}>
+                        <div key={gamer.id} className="p-1 border border-white">
                             <div className='flex items-center'>
                                 {/* Name */}
-                                <div className='flex-1 my-1 mr-1 justify-center text-center'>
-                                    <input key={gamer.id} type="text" value={gamer.name} className="w-full border border-white " onChange={(e) => onChangeNameGamer(e.target.value, gamer.id)} />
+                                <div className='flex-1 my-1 mr-1 justify-center text-center '>
+                                    <input key={gamer.id} type="text" value={gamer.name} className="w-full border bg-transparent px-1 border-white " onChange={(e) => onChangeNameGamer(e.target.value, gamer.id)} />
                                 </div>
                                 {/* Order */}
                                 <div className='border border-white'>
@@ -230,14 +191,14 @@ export default function counterClassic() {
                                     +
                                 </div>
                             </div>
-                            <div onClick={() => save(gamer.id)}>Save</div>
+                            <div className='border border-white text-center my-1' onClick={() => save(gamer.id)}>Save</div>
                             {/* Total current Gamer */}
                             <div>Total : {gamer.currentScore}</div>
                         </div>
                     )
                 })}
                 {/* Add player */}
-                <div onClick={addPalyer}>Add player +</div>
+                <div className='border border-white  my-1 py-2 px-1 text-center' onClick={addPlayer}>Add player +</div>
             </div>
 
         </div>

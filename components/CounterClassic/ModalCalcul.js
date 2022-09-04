@@ -1,17 +1,20 @@
 import React, { useState } from 'react'
 
-export default function ModalCalcul({ currentGamer, onIncreaseScore, onReduceScore, closeModalCalcul, addInScoring, options }) {
+export default function ModalCalcul({ currentGamer, updateGamerCurrentScore, closeModalCalcul, addInScoring, options }) {
     const [operator, setOperator] = useState("+")
+    const [currentScoreTemporary, setCurrentScoreTemporary] = useState(currentGamer.currentScore)
     const [amount, setAmount] = useState(0)
 
     const save = () => {
         if (operator === "+") {
-            onIncreaseScore(currentGamer.id, amount)
+            const total = currentGamer.currentScore + Number(amount)
             addInScoring(currentGamer.id, amount)
+            updateGamerCurrentScore(currentGamer.id, total)
         }
         if (operator === "-") {
-            onReduceScore(currentGamer.id, amount)
+            const total = currentGamer.currentScore - Number(amount)
             addInScoring(currentGamer.id, -amount)
+            updateGamerCurrentScore(currentGamer.id, total)
         }
         closeModalCalcul()
     }
@@ -22,7 +25,19 @@ export default function ModalCalcul({ currentGamer, onIncreaseScore, onReduceSco
     }
 
     const onChangeAmount = (value) => {
-        setAmount(Number(value))
+        const total = operator === "-" ? currentGamer.currentScore - value : currentGamer.currentScore + Number(value)
+        if (options.possibleNegative) {
+            setAmount(Number(value))
+        }
+        if (!options.possibleNegative) {
+            console.log("totla", total)
+            if (total < 0) {
+                // Error message - negative value not authorized
+            } else {
+                setAmount(Number(value))
+            }
+        }
+        setCurrentScoreTemporary(total)
     }
 
     return (
@@ -42,10 +57,11 @@ export default function ModalCalcul({ currentGamer, onIncreaseScore, onReduceSco
                 <div className="flex-1 border border-white">
                     <input type="number" min={0} max={
                         operator === "-" && !options.possibleNegative ? currentGamer.currentScore : 10000000
-                    } value={amount} onChange={(e) => onChangeAmount(e.target.value)} />
+                    } value={amount} onChange={(e) => onChangeAmount(e.target.value)} className="w-full bg-transparent text-center" />
                 </div>
             </div>
-            <div onClick={save}>Save</div>
+            Total : {currentScoreTemporary}
+            <div className='border border-white text-center' onClick={save}>Save</div>
         </div>
     )
 }
