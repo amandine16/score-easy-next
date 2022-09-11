@@ -2,9 +2,9 @@
 import React, { useEffect, useState } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCalculator, faArrowRotateLeft, faClock, faUserPlus, faEllipsisH } from '@fortawesome/free-solid-svg-icons';
-import ModalCalcul from '../../components/CounterClassic/modalClassic/ModalCalcul';
-import { gamerAddByDefault } from '../../utils/constants';
-import ModalOptionsCounterClassic from '../../components/CounterClassic/modalClassic/ModalOptionsCounterClassic';
+import ModalCalcul from '../components/CounterClassic/modalClassic/ModalCalcul';
+import { gamerAddByDefault } from '../utils/constants';
+import ModalOptionsCounterClassic from '../components/CounterClassic/modalClassic/ModalOptionsCounterClassic';
 
 
 export default function counterClassic() {

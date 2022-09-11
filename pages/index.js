@@ -13,9 +13,13 @@ export default function Home() {
       </Head>
 
       <main >
-        <Link href="/game/counter-classic">
-          <a>
-            aller vers compteur classique</a></Link>
+        {/* <a href="counter-classic">
+          aller vers compteur classique
+        </a> */}
+        <Link href={"/counter-classic"}>
+          counter
+        </Link>
+
       </main>
     </div>
   )
