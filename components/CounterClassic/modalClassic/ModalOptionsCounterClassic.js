@@ -1,5 +1,4 @@
 import React, { useState } from 'react'
-import { Switch } from '@headlessui/react'
 
 export default function ModalOptionsCounterClassic({ changeOptions, onChangeOptions, closeModal, options }) {
     const [incrementation, setIncrementation] = useState(options.incrementation)

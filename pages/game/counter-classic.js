@@ -156,6 +156,7 @@ export default function counterClassic() {
         onRefresh()
     }
 
+
     return (
         <div className="max-w-sm mx-auto border  border-white p-2 ">
             {showModalCalcul &&
@@ -188,7 +189,6 @@ export default function counterClassic() {
                                 <div className='border border-white'>
                                     #{gamer.podium}
                                 </div>
-
                             </div>
                             {/* Scoring */}
                             <div className=' w-full no-scrollbar  overflow-auto whitespace-nowrap  flex'>
@@ -196,20 +196,20 @@ export default function counterClassic() {
                                     return (
                                         <>
                                             <div key={index} className={`min-w-[100px] border text-center border-white overflow-hidden ${index === gamer.points.length - 1 && 'font-bold '}`} >{point}</div>
-
                                         </>
                                     )
                                 })}
                             </div>
                             {/* Counter */}
-                            <div className="flex items-center">
-                                <div className='flex items-center justify-center border border-white flex-1' onClick={() => onReduceScore(gamer.currentScore, options.incrementation, index)} >
+                            <div className="flex items-center h-20">
+                                <div className='flex items-center justify-center border border-white w-1/5 h-full' onClick={() => onReduceScore(gamer.currentScore, options.incrementation, index)} >
                                     -
                                 </div>
-                                <div className='flex items-center justify-center border border-white flex-1' onClick={() => openModalCalcul(gamer.id)}>
+                                {/* <div className='flex items-center justify-center border border-white w-3/5  h-full' onClick={() => openInputCounter(gamer.id)}> */}
+                                <div className='flex items-center justify-center border border-white w-3/5  h-full' onClick={() => openModalCalcul(gamer.id)}>
                                     {pointsAddedEachRound[index]}
                                 </div>
-                                <div className='flex items-center justify-center border border-white flex-1' onClick={() => onIncreaseScore(gamer.currentScore, options.incrementation, index)}>
+                                <div className='flex items-center justify-center border border-white w-1/5  h-full' onClick={() => onIncreaseScore(gamer.currentScore, options.incrementation, index)}>
                                     +
                                 </div>
                             </div>
