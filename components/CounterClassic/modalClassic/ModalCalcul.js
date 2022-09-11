@@ -3,23 +3,17 @@ import React, { useState } from 'react'
 export default function ModalCalcul({ save, options, currentGamer, closeModal, }) {
     const [points, setPoints] = useState(0)
 
-    const onSave = (operator, points) => {
-        let total = 0
-        let pointsFormatted = points
-        if (operator === "-") {
-            total = currentGamer.currentScore + -Math.abs(points)
-            pointsFormatted = -Math.abs(points)
-        } else (
-            total = currentGamer.currentScore + (Math.abs(points))
-        )
-        if (!options.possibleNegative && total < 0) {
-            total = 0
-        }
-        save(currentGamer.id, total, pointsFormatted)
+    const add = () => {
+        save(currentGamer.id, currentGamer.currentScore + (Math.abs(points)), points)
         closeModal()
+
     }
 
+    const substract = () => {
+        save(currentGamer.id, currentGamer.currentScore + (-Math.abs(points)), points)
+        closeModal()
 
+    }
 
     const onChangePoints = (value) => {
         setPoints(value)
@@ -40,8 +34,8 @@ export default function ModalCalcul({ save, options, currentGamer, closeModal, }
             </div>
 
 
-            <div className='border border-black text-center' onClick={() => onSave('+', points)}>Ajouter</div>
-            <div className='border border-black text-center' onClick={() => onSave('-', points)}>Soustraire</div>
+            <div className='border border-black text-center' onClick={add}>Ajouter</div>
+            <div className='border border-black text-center' onClick={substract}>Soustraire</div>
         </div >
     )
 }

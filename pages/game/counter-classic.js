@@ -109,24 +109,11 @@ export default function counterClassic() {
     }
 
 
-    const calculBeforeSave = (currentGamer) => {
-        let total = 0
-        total = Number(currentGamer.currentScore) + Number(currentPoints[currentGamer.id])
-        if (!options.possibleNegative && total < 0) {
-            total = 0
-        }
-        save(currentGamer.id, total, currentPoints[currentGamer.id])
-    }
-
-
     const save = (currentGamerId, scoreTotal, points) => {
-        console.log('currentGamerId', currentGamerId)
-        console.log('scoreTotal', scoreTotal)
-        console.log('points', points)
-        updateGamerCurrentScore(currentGamerId, scoreTotal)
-        addInScoring(currentGamerId, points)
+        let scoreFormatted = (!options.possibleNegative && scoreTotal < 0) ? 0 : scoreTotal
+        updateGamerCurrentScore(currentGamerId, scoreFormatted)
+        addInScoring(currentGamerId, Number(points))
         onRefresh()
-
     }
 
 
@@ -147,10 +134,8 @@ export default function counterClassic() {
     }
 
     const changeOptions = (key, value) => {
-        console.log('key', key, value)
         const newOptions = { ...options }
         newOptions[key] = value
-        console.log('newoptions', newOptions)
         setOptions(newOptions)
         onRefresh()
     }
@@ -213,7 +198,7 @@ export default function counterClassic() {
                                     +
                                 </div>
                             </div>
-                            <div className='border border-white text-center my-1' onClick={() => calculBeforeSave(gamer, gamer.currentScore + currentPoints)}>Save</div>
+                            <div className='border border-white text-center my-1' onClick={() => save(currentGamer.id, Number(gamer.currentScore) + Number(currentPoints), currentPoints[currentGamer.id])}>Save</div>
                             {/* Total current Gamer */}
                             <div>Total : {gamer.currentScore}</div>
                         </div>
