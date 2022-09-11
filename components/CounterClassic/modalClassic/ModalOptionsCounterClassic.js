@@ -61,7 +61,7 @@ export default function ModalOptionsCounterClassic({ changeOptions, onChangeOpti
                 {/* Chrono */}
                 <li >
                     <p>Chrono :</p>
-                    <p className='text-xs mb-1'>Pour lancer le timer, revevenir au compteur, et cliquez sur licône </p>
+                    <p className='text-xs mb-1'>Pour lancer le timer, revevenir au compteur, et cliquez sur l&apos;icône </p>
                     <div className="flex mb-2">
                         <input min={0} className='w-full flex-1 mr-2 bg-transparent border px-2' type="number" value={hours} onChange={(e) => setHours(e.target.value)}></input>
                         <input min={0} className='w-full flex-1 mr-2 bg-transparent border px-2' type="number" value={minutes} onChange={(e) => setMinutes(e.target.value)}></input>
