@@ -26,16 +26,19 @@ export default function ModalCalcul({ currentGamer, onRefresh, updateGamerCurren
     }
 
     const onChangeAmount = (value) => {
-        const total = operator === "-" ? currentGamer.currentScore - value : currentGamer.currentScore + Number(value)
+        console.log('value', value)
+
+        const total = operator === "-" ? currentGamer.currentScore - Math.abs(value) : currentGamer.currentScore + Number(value)
         if (options.possibleNegative) {
             setAmount(Number(value))
         }
         if (!options.possibleNegative) {
             console.log("totla", total)
             if (total < 0) {
+                setAmount(value)
                 // Error message - negative value not authorized
             } else {
-                setAmount(Number(value))
+                setAmount(value)
             }
         }
         setCurrentScoreTemporary(total)
@@ -57,9 +60,11 @@ export default function ModalCalcul({ currentGamer, onRefresh, updateGamerCurren
                     </div>
                 </div>
                 <div className="flex-1 h-full border border-black">
-                    <input type="number" min={0} max={
-                        operator === "-" && !options.possibleNegative ? currentGamer.currentScore : 10000000
-                    } value={amount} onChange={(e) => onChangeAmount(e.target.value)} className="w-full h-full flex-1 bg-transparent text-center" />
+                    <input type="number"
+                        // max={
+                        // operator === "-" && !options.possibleNegative ? currentGamer.currentScore : 10000000
+                        // }
+                        value={amount} onChange={(e) => onChangeAmount(e.target.value)} className="w-full h-full flex-1 bg-transparent text-center" />
                 </div>
             </div>
 

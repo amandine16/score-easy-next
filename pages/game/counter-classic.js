@@ -29,15 +29,16 @@ export default function counterClassic() {
     }
 
     const onRefresh = () => {
-        setRefresh((oldRefresh) => !oldRefresh)
+        setRefresh((oldRefresh) => setRefresh(!oldRefresh))
     }
 
     useEffect(() => {
         const gamersSort = [...gamers]
         gamersSort.sort((a, b) => (a.currentScore > b.currentScore) ? 1 : ((b.currentScore > a.currentScore) ? -1 : 0));
-        if (options.whoWins === "most points") {
+        if (options.whoWins) {
             gamersSort.reverse()
         }
+
         const sortIdsGamers = []
         gamersSort.map((gamer, index) => {
             return (
@@ -68,28 +69,25 @@ export default function counterClassic() {
         const newPointsAddedEachRound = [...pointsAddedEachRound]
         newPointsAddedEachRound[index] = newPointsAddedEachRound[index] - incrementation
 
+        setpointsAddedEachRound(newPointsAddedEachRound)
+        const total = currentScore - Math.abs(newPointsAddedEachRound[index])
 
-        if (!options.possibleNegative) {
-            if (pointsAddedEachRound[index] - Math.abs(newPointsAddedEachRound[index]) < 0) {
-                // afficher message erreur
-            } else {
+        if (!options.possibleNegative && total <= 0) {
+            setCurrentScoreTemporary(0)
+        } else {
 
-                setpointsAddedEachRound(newPointsAddedEachRound)
-                setCurrentScoreTemporary(currentScore - Math.abs(newPointsAddedEachRound[index]))
-
-            }
-        }
-        if (options.possibleNegative) {
-            setpointsAddedEachRound(newPointsAddedEachRound)
             setCurrentScoreTemporary(currentScore - Math.abs(newPointsAddedEachRound[index]))
-
         }
+
     }
 
 
 
     const onIncreaseScore = (currentScore, incrementation, index) => {
         const newPointsAddedEachRound = [...pointsAddedEachRound]
+        console.log("pointsAddedEachRound", pointsAddedEachRound)
+
+
         const total = pointsAddedEachRound[index] + incrementation
         newPointsAddedEachRound[index] = total
         setpointsAddedEachRound(newPointsAddedEachRound)
@@ -100,7 +98,7 @@ export default function counterClassic() {
     const optionsDefault = {
         incrementation: 1,
         chrono: false,
-        whoWins: "most points",
+        whoWins: true,
         sleeves: "illimity",
         possibleNegative: false
     }
@@ -150,9 +148,12 @@ export default function counterClassic() {
     }
 
     const changeOptions = (key, value) => {
+        console.log('key', key, value)
         const newOptions = { ...options }
         newOptions[key] = value
+        console.log('newoptions', newOptions)
         setOptions(newOptions)
+        onRefresh()
     }
 
     return (

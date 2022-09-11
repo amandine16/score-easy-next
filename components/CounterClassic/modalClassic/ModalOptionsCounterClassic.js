@@ -2,18 +2,21 @@ import React, { useState } from 'react'
 import { Switch } from '@headlessui/react'
 
 export default function ModalOptionsCounterClassic({ changeOptions, onChangeOptions, closeModal, options }) {
-    const [incrementation, setIncrementation] = useState(1)
-    const [chrono, setChrono] = useState(false)
+    const [incrementation, setIncrementation] = useState(options.incrementation)
+    const [possibleNegative, setPossibleNegative] = useState(options.possibleNegative)
+    const [whoWins, setWhoWins] = useState(options.whoWins)
+    const [hours, setHours] = useState(0)
+    const [minutes, setMinutes] = useState(0)
+    const [seconds, setSeconds] = useState(0)
 
     const onChangeIncrementation = (value) => {
         setIncrementation(Number(value))
     }
 
-
-
-
     const save = () => {
         changeOptions("incrementation", incrementation)
+        changeOptions("whoWins", whoWins)
+        changeOptions("possibleNegative", possibleNegative)
         closeModal()
     }
     return (
@@ -29,7 +32,6 @@ export default function ModalOptionsCounterClassic({ changeOptions, onChangeOpti
                             <p>{optionKey} : </p>
                             <p>{options[optionKey]}</p>
                         </li>
-
                     )
                 })}
             </ul> */}
@@ -40,27 +42,37 @@ export default function ModalOptionsCounterClassic({ changeOptions, onChangeOpti
                     <p>Incrementation :</p>
                     <input type="number" min={1} value={incrementation} onChange={(e) => onChangeIncrementation(e.target.value)} className="bg-transparent text-right" />
                 </li>
-                <li className='flex items-center justify-between'>
+                {/* Possible negative ? */}
+                <li >
+                    <p >Value negative ? </p>
+                    <div className="flex">
+                        <div className={`w-fit  mr-2 bg-transparent ${possibleNegative ? 'border border-black' : 'border border-gray-200'} px-4`} onClick={() => setPossibleNegative(true)}>yes</div>
+                        <div className={`w-fit  mr-2 bg-transparent ${!possibleNegative ? 'border border-black' : 'border border-gray-200'} px-4`} onClick={() => setPossibleNegative(false)}>no</div>
+                    </div>
+                </li>
+                {/* Who wins ? */}
+                <li >
+                    <p >Who wins ? </p>
+                    <div className="flex">
+                        <div className={`w-fit  mr-2 bg-transparent ${whoWins ? 'border border-black' : 'border border-gray-200'} px-4`} onClick={() => setWhoWins(true)}>+ points</div>
+                        <div className={`w-fit  mr-2 bg-transparent ${!whoWins ? 'border border-black' : 'border border-gray-200'} px-4`} onClick={() => setWhoWins(false)}>- points</div>
+                    </div>
+                </li>
+                {/* Chrono */}
+                <li >
                     <p>Chrono :</p>
-                    <Switch
-                        checked={chrono}
-                        onChange={setChrono}
-                        className={`${chrono ? 'bg-black' : 'bg-gray-300'}
-          relative inline-flex h-[18px] w-[44px] shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus-visible:ring-2  focus-visible:ring-white focus-visible:ring-opacity-75`}
-                    >
-                        <span className="sr-only">Use setting</span>
-                        <span
-                            aria-hidden="true"
-                            className={`${chrono ? 'translate-x-[25px]' : 'translate-x-0'}
-            pointer-events-none inline-block h-[14px] w-[14px] transform rounded-full bg-white shadow-lg ring-0 transition duration-200 ease-in-out`}
-                        />
-                    </Switch>
+                    <p className='text-xs mb-1'>Pour lancer le timer, revevenir au compteur, et cliquez sur l'icône </p>
+                    <div className="flex mb-2">
+                        <input min={0} className='w-full flex-1 mr-2 bg-transparent border px-2' type="number" value={hours} onChange={(e) => setHours(e.target.value)}></input>
+                        <input min={0} className='w-full flex-1 mr-2 bg-transparent border px-2' type="number" value={minutes} onChange={(e) => setMinutes(e.target.value)}></input>
+                        <input min={0} className='w-full flex-1 bg-transparent border px-2' type="number" value={seconds} onChange={(e) => setSeconds(e.target.value)}></input>
+                    </div>
                 </li>
             </ul>
 
 
 
             <div className='border border-black text-center' onClick={save}>Save</div>
-        </div>
+        </div >
     )
 }
